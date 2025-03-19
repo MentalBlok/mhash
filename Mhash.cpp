@@ -72,6 +72,59 @@ uint32_t Mhash::ind16_7_5[sz18_7];
 uint32_t Mhash::ind16_7_6[sz18_7];
 uint32_t Mhash::ind16_7_7[sz18_7];
 
+/* Explanation of the Switch Statement created by the Mhash::generate() method
+
+The output of generate is saved to the switch.cpp file. Then, this file
+ is included in this class to do the actual hashing.
+
+The switch statement in switch.cpp is used to calculate a unique hash
+ value (rHash) for a 7-card hand based on the pattern of bits set in
+ the 64-bit integer b7. Here's a detailed breakdown:
+
+Switch on kind
+
+The variable kind is determined by the number of bits set in different
+ parts of b7. It effectively categorizes the bit patterns into cases.
+
+Case Structure
+
+Each case represents a unique combination of bits set in three slices
+ of b7 (lower 18 bits, middle 18 bits, and upper bits). For example,
+ case 0 represents a pattern where the upper bits have 7 bits set,
+ and both the middle and lower bits have none.
+
+
+Bit Projection and Index Calculation
+
+For each case, the bits are projected out of b7 and assigned to variables
+ p0, p1, and p2 using bitwise operations. These projections isolate
+ specific slices of bits.
+
+The corresponding indices (ind18_7, ind16_7_x) are then used to calculate
+ the final hash value rHash. These indices map the bit patterns to
+ unique values.
+
+Total Count and Offset
+
+The totCnt (total count) for each case is calculated based on the number
+ of combinations possible for the given bit pattern. This ensures that
+ each hash value is unique.
+
+An offset is added to rHash to account for the cumulative count of
+ previous cases, ensuring uniqueness across all cases.
+
+Return and Default
+
+After calculating rHash, the function returns. If kind does not match
+ any case, the default case prints an error message and exits the program.
+
+This switch statement is a critical part of the hashing function, ensuring
+ that each unique 7-card hand is hashed to a unique value efficiently.
+
+A number of diagnostic statements are turned off by testing for zero. These were
+used to debug the program by printing auxiliary information about the cases.
+*/
+
 void Mhash::generate()
 {
   int cumCnt = 0;
@@ -217,6 +270,10 @@ void Mhash::timeHash(int nIter)
       }
     }
   }
+  
+  /* The number of instances of each hash value should be exactly equal to the number of
+  times we iterate through the the timing loop. Flag any instances where this does not hold true.
+  */
   int errCnt = 0;
   cout << "Sanity test:" << endl;
   for (int i = 0; i < KSZ; i++) {
@@ -374,8 +431,7 @@ void Mhash::mentalHash(const uint64_t & b7, int & rHash)
 #include "switch.cpp"
 }
 
-
-#if 0 // The frequency of reaching each case in the hash switch
+/* Testing information. The frequency of reaching each case in the hash switch
  1    144144
  2    668304
  3   1485120
@@ -411,4 +467,4 @@ void Mhash::mentalHash(const uint64_t & b7, int & rHash)
 48    297024
 49    334152
 56     31824
-#endif
+*/
