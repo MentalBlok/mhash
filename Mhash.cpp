@@ -6,51 +6,11 @@
 #include <iostream>
 #include <time.h>
 #include <unistd.h>
+#include "Mhash.h"
 
 using namespace std;
 
 int pop[57];
-
-class Mhash {
-  static const char syms[];
-  static const int sz18_7 = 262144;
-  static const int sz16_7 = 65536;
-  static uint8_t bc18[sz18_7];
-  static uint8_t bc16[sz16_7];
-  static uint32_t ind18_7[sz18_7];
-
-  static uint32_t ind18_7_1[sz18_7];
-  static uint32_t ind18_7_2[sz18_7];
-  static uint32_t ind18_7_3[sz18_7];
-  static uint32_t ind18_7_4[sz18_7];
-  static uint32_t ind18_7_5[sz18_7];
-  static uint32_t ind18_7_6[sz18_7];
-  static uint32_t ind18_7_7[sz18_7];
-
-  static uint32_t ind16_7_1[sz18_7];
-  static uint32_t ind16_7_2[sz18_7];
-  static uint32_t ind16_7_3[sz18_7];
-  static uint32_t ind16_7_4[sz18_7];
-  static uint32_t ind16_7_5[sz18_7];
-  static uint32_t ind16_7_6[sz18_7];
-  static uint32_t ind16_7_7[sz18_7];
-  int cnts16[8];
-  int cnts18[8];
-public:
-  Mhash();
-  void testHash();
-  void timeHash(int nIter);
-  void generate();
-  void pN(uint64_t b, int n);
-  void mentalHash(const uint64_t & b7, int & rHash);
-  static const int NDECK = 52;
-  static const int KSZ = 133784560;
-  static const uint64_t ONE = 1ULL;
-};
-
-// int Mhash::cnts16[] = { 1, 16, 120, 560, 1820, 4368, 8008, 11440 }:
-// int Mhash::cnts18[] = { 1, 18, 153, 816, 3060, 8568, 18564, 31824 }:
-
 const char Mhash::syms[] = "23456789TJQKAtjqka";
 uint8_t Mhash::bc18[sz18_7];
 uint8_t Mhash::bc16[sz16_7];
@@ -319,7 +279,11 @@ void Mhash::testHash()
       }
     }
   }
-#if 1
+
+  /* SANITY TEST: There are 133,784,560 unique 7-card hands. hashCnt[] counts the number of times a hand hashes
+  to each value. This should be exactly equal to the number of times the timing loop iterates through
+  all possible hands.
+  */
   int errCnt = -1, prevCnt = -1;
   cout << "Sanity test:" << endl;
   for (int i = 0; i < KSZ; i++) {
@@ -340,7 +304,7 @@ void Mhash::testHash()
       cout << setw(8) << b << setw(8) << ind18_7[b] << endl;
     }
   }
-#endif
+
 #if 0
   for (int i = 0; i < 57; i++) {
     if (pop[i]) cout << setw(2) << i << setw(10) << pop[i] << endl;
